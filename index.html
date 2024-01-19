@@ -1,157 +1,176 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Alien Virus T-rex</title>
-    <style>
-      body {
-        background-color: black;
-        color: white;
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alien Virus T-rex</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+    }
 
-      .align-items {
-        display: flex;
-        justify-content: center;
-      }
+    .align-items {
+      display: flex;
+      justify-content: center;
+    }
 
-      .button {
-        margin: 50px 30px;
-        cursor: pointer;
-        border-radius: 100%;
-        padding: 15px;
-        border: 5px solid white;
-      }
+    .button {
+      margin: 50px 30px;
+      cursor: pointer;
+      border-radius: 100%;
+      padding: 15px;
+      border: 5px solid white;
+    }
 
-      .tie-image {
-        display: none; /* Hide initially, show it when there's a tie */
-      }
-    </style>
-  </head>
-  <body>
-    <p>Alien, T-Rex, Virus</p>
-    <span class="align-items">
-      <button onclick="
-        playGame('alien');
-      " class="button">
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-        <lord-icon
-          src="https://cdn.lordicon.com/nkzeizkf.json"
-          trigger="click"
-          style="width:200px;height:200px">
-        </lord-icon>
-      </button>
+    .tie-image {
+      display: none; /* Hide initially, show it when there's a tie */
+    }
 
-      <button onclick="
-        playGame('virus');
-      " class="button">
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-        <lord-icon
-          src="https://cdn.lordicon.com/oeloawfe.json"
-          trigger="click"
-          style="width:200px;height:200px">
-        </lord-icon>
-      </button>
+    .reset-button {
+      background-color: purple;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
 
-      <button onclick="
-        playGame('t-rex');
-      " class="button">
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-        <lord-icon
-          src="https://cdn.lordicon.com/aafzhgjn.json"
-          trigger="click"
-          style="width:200px;height:200px">
-        </lord-icon>
-      </button>
-    </span>
-
-    <p class="js-moves"></p>
-    <p class="js-result"></p>
-    <p class="js-score"></p>
-
-    <div class="tie-image">
-    </div>
+    .reset-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <p>Alien, T-Rex, Virus</p>
+  <span class="align-items">
+    <button onclick="
+      playGame('alien');
+    " class="button">
+      <script src="https://cdn.lordicon.com/lordicon.js"></script>
+      <lord-icon
+        src="https://cdn.lordicon.com/nkzeizkf.json"
+        trigger="click"
+        style="width:200px;height:200px">
+      </lord-icon>
+    </button>
 
     <button onclick="
-      score.wins = 0;
-      score.losses = 0;
-      score.ties = 0;
-      localStorage.removeItem('score');
+      playGame('virus');
+    " class="button">
+      <script src="https://cdn.lordicon.com/lordicon.js"></script>
+      <lord-icon
+        src="https://cdn.lordicon.com/oeloawfe.json"
+        trigger="click"
+        style="width:200px;height:200px">
+      </lord-icon>
+    </button>
+
+    <button onclick="
+      playGame('t-rex');
+    " class="button">
+      <script src="https://cdn.lordicon.com/lordicon.js"></script>
+      <lord-icon
+        src="https://cdn.lordicon.com/aafzhgjn.json"
+        trigger="click"
+        style="width:200px;height:200px">
+      </lord-icon>
+    </button>
+  </span>
+
+  <p class="js-moves"></p>
+  <p class="js-result"></p>
+  <p class="js-score"></p>
+
+  <div class="tie-image">
+
+  </div>
+
+  <button class="reset-button" onclick="
+    score.wins = 0;
+    score.losses = 0;
+    score.ties = 0;
+    localStorage.removeItem('score');
+    updateScoreElement();
+  ">Reset Score</button>
+
+<script>
+  let score = JSON.parse(localStorage.getItem('score')) || {
+    wins: 0,
+    losses: 0,
+    ties: 0
+  };
+
+  updateScoreElement();
+
+  function playGame(playerMove) {
+    const computerMove = pickComputerMove();
+
+    let result = '';
+
+    if (playerMove === 't-rex') {
+      if (computerMove === 'alien') {
+        result = 'You lose.';
+      } else if (computerMove === 'virus') {
+        result = 'You win.';
+      } else if (computerMove === 't-rex') {
+        result = 'Tie.';
+      }
+    } else if (playerMove === 'virus') {
+      if (computerMove === 'alien') {
+        result = 'You win.';
+      } else if (computerMove === 'virus') {
+        result = 'Tie.';
+      } else if (computerMove === 't-rex') {
+        result = 'You lose.';
+      }
+    } else if (playerMove === 'alien') {
+      if (computerMove === 'alien') {
+        result = 'Tie.';
+      } else if (computerMove === 'virus') {
+        result = 'You lose.';
+      } else if (computerMove === 't-rex') {
+        result = 'You win.';
+      }
+    }
+
+    if (result === 'Tie.') {
+      score.ties += 1;
+      const tieImage = document.querySelector('.tie-image');
+      tieImage.style.display = 'block';
+    } else {
+      if (result === 'You win.') {
+        score.wins += 1;
+      } else if (result === 'You lose.') {
+        score.losses += 1;
+      }
+      localStorage.setItem('score', JSON.stringify(score));
       updateScoreElement();
-    ">Reset Score</button>
+    }
 
-    <script>
-      let score = JSON.parse(localStorage.getItem('score')) || {
-        wins: 0,
-        losses: 0,
-        ties: 0
-      };
+    document.querySelector('.js-result').innerHTML = result;
+    document.querySelector('.js-moves').innerHTML = `You chose ${playerMove} - Computer chose ${computerMove} `;
+  }
 
-      updateScoreElement();
+  function updateScoreElement() {
+    document.querySelector('.js-score').innerHTML = `Wins: ${score.wins}, Losses: ${score.losses}, Ties: ${score.ties}`;
+  }
 
-      function playGame(playerMove) {
-        const computerMove = pickComputerMove();
-
-        let result = '';
-
-        if (playerMove === 't-rex') {
-          if (computerMove === 'alien') {
-            result = 'You lose.';
-          } else if (computerMove === 'virus') {
-            result = 'You win.';
-          } else if (computerMove === 't-rex') {
-            result = 'Tie.';
-          }
-        } else if (playerMove === 'virus') {
-          if (computerMove === 'alien') {
-            result = 'You win.';
-          } else if (computerMove === 'virus') {
-            result = 'Tie.';
-          } else if (computerMove === 't-rex') {
-            result = 'You lose.';
-          }
-        } else if (playerMove === 'alien') {
-          if (computerMove === 'alien') {
-            result = 'Tie.';
-          } else if (computerMove === 'virus') {
-            result = 'You lose.';
-          } else if (computerMove === 't-rex') {
-            result = 'You win.';
-          }
-        }
-
-        if (result === 'Tie.') {
-          score.ties += 1;
-          const tieImage = document.querySelector('.tie-image');
-          tieImage.style.display = 'block';
-        } else {
-          if (result === 'You win.') {
-            score.wins += 1;
-          } else if (result === 'You lose.') {
-            score.losses += 1;
-          }
-          localStorage.setItem('score', JSON.stringify(score));
-          updateScoreElement();
-        }
-
-        document.querySelector('.js-result').innerHTML = result;
-        document.querySelector('.js-moves').innerHTML = `You chose ${playerMove} - Computer chose ${computerMove} `;
-      }
-
-      function updateScoreElement() {
-        document.querySelector('.js-score').innerHTML = `Wins: ${score.wins}, Losses: ${score.losses}, Ties: ${score.ties}`;
-      }
-
-      function pickComputerMove() {
-        const randomNumber = Math.random();
-        let computerMove = '';
-        if (randomNumber >= 0 && randomNumber < 1 / 3) {
-          computerMove = 'alien';
-        } else if (randomNumber >= 1 / 3 && randomNumber < 2 / 3) {
-          computerMove = 'virus';
-        } else if (randomNumber >= 2 / 3 && randomNumber < 1) {
-          computerMove = 't-rex';
-        }
-        return computerMove;
-      }
-    </script>
-  </body>
+  function pickComputerMove() {
+    const randomNumber = Math.random();
+    let computerMove = '';
+    if (randomNumber >= 0 && randomNumber < 1 / 3) {
+      computerMove = 'alien';
+    } else if (randomNumber >= 1 / 3 && randomNumber < 2 / 3) {
+      computerMove = 'virus';
+    } else if (randomNumber >= 2 / 3 && randomNumber < 1) {
+      computerMove = 't-rex';
+    }
+    return computerMove;
+  }
+</script>
+</body>
 </html>
